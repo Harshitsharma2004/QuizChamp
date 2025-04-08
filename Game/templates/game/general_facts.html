@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center text-light fw-bold mb-4">🌍 Amazing Random Facts</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <ul class="list-group shadow-lg rounded-3 overflow-hidden">
+                {% for fact in facts %}
+                    <li class="list-group-item bg-gradient bg-dark text-light border-light border-opacity-25 py-3 fs-5">
+                        🔹 {{ fact }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <form method="get" class="mt-4">
+        <div class="text-center">
+            <button class="btn btn-warning btn-lg fw-bold shadow-sm">
+                🔄 Load New Facts
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(to bottom right, #1e1e2f, #2c3e50);
+    }
+    ul.list-group {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+</style>
+{% endblock %}

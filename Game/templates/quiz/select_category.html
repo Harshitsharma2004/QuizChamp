@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Select Category{% endblock %}
+
+{% block extra_head %}
+<style>
+  .category-box input[type="radio"] {
+    display: none;
+  }
+
+  .category-box .box-inner {
+    width: 100%;
+    height: 260px; /* Increased height */
+    background-size: cover;
+    background-position: center;
+    border-radius: 16px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    color: white;
+    font-weight: 600;
+    font-size: 1.5rem; /* Slightly larger text */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+  }
+
+  .category-box .box-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Darker overlay for clarity */
+    z-index: 1;
+  }
+
+  .category-box .box-inner h5 {
+    position: relative;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    margin: 0;
+  }
+
+  .category-box input[type="radio"]:checked + .box-inner {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px #0d6efd;
+    border: 2px solid #0d6efd;
+  }
+
+  .category-box {
+    cursor: pointer;
+  }
+
+  /* Optional: Make the form responsive */
+  @media (max-width: 576px) {
+    .category-box .box-inner {
+      height: 200px;
+      font-size: 1.2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4 text-center">Choose a Category</h2>
+  <form method="post" action="{% url 'start_quiz' %}">
+    {% csrf_token %}
+    <div class="row g-4">
+      {% for category in categories %}
+      <div class="col-12 col-sm-6 col-md-4">
+        <label class="category-box d-block">
+          <input
+            type="radio"
+            name="category_id"
+            value="{{ category.id }}"
+            required
+          />
+          <div
+            class="box-inner"
+            style="background-image: url('{% if category.background_image %}{{ category.background_image.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}');"
+          >
+            <h5>{{ category.name }}</h5>
+          </div>
+        </label>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary px-4">Play</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-5 text-center" style="max-width: 500px; width: 100%; border-radius: 15px;">
+        <h2 class="fw-bold text-primary mb-3">👤 Your Profile</h2>
+
+        <div class="mt-3">
+            {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Profile Picture" 
+                     class="rounded-circle border border-primary shadow-lg"
+                     style="width: 130px; height: 130px; object-fit: cover; border-width: 3px;">
+            {% else %}
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold shadow-lg"
+                     style="width: 130px; height: 130px; font-size: 2rem;">
+                    {{ user.username|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <p class="mt-3 fw-bold fs-4 text-dark">{{ user.username }}</p>
+        <p class="text-muted"><strong>Email:</strong> {{ user.email }}</p>
+
+        <p class="mb-3">
+            <strong>Verified:</strong> 
+            {% if user.email_verified %}
+                <span class="text-success fw-bold">✅ Yes</span>
+            {% else %}
+                <span class="text-danger fw-bold">❌ No</span>
+            {% endif %}
+        </p>
+
+        <div class="mt-4 d-grid gap-3">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary fw-bold shadow-sm py-2"
+               style="border-radius: 8px; transition: all 0.3s ease-in-out;">
+                ✏️ Edit Profile
+            </a>
+            
+            <a href="{% url 'change_password' %}" class="btn btn-warning fw-bold text-white shadow-sm py-2"
+               style="border-radius: 8px; transition: all 0.3s ease-in-out;">
+                🔒 Change Password
+            </a>
+            
+            <a href="{% url 'delete_account' %}" class="btn btn-danger fw-bold shadow-sm py-2" 
+               style="border-radius: 8px; transition: all 0.3s ease-in-out;"
+               onclick="return confirm('Are you sure? This action cannot be undone.')">
+                ❌ Delete Account
+            </a>
+            
+            <a href="{% url 'logout' %}" class="btn btn-secondary fw-bold shadow-sm py-2"
+               style="border-radius: 8px; transition: all 0.3s ease-in-out;">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

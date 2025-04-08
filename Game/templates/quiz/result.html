@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block title %}Result{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+  <div class="bg-dark p-5 rounded-4 shadow-lg">
+    <h2 class="text-light mb-4">🎉 Quiz Completed!</h2>
+    
+    <!-- Score Display -->
+    <div class="mb-4">
+      <p class="lead text-light">Your Score: <strong class="text-success">{{ score }}</strong> out of <strong class="text-warning">{{ total }}</strong></p>
+    </div>
+
+    <!-- Congratulations Badge -->
+    <div class="badge badge-pill bg-success text-light px-4 py-2 mb-4" style="font-size: 1.2rem;">
+      🎯 Great Job!
+    </div>
+
+    <!-- Play Again Button -->
+    <a href="{% url 'select_category' %}" class="btn btn-lg btn-success shadow-lg mt-5">
+      Play Again <i class="bi bi-arrow-repeat"></i>
+    </a>
+  </div>
+</div>
+
+<!-- Custom JS for Animation -->
+<script>
+  localStorage.removeItem("quiz_timer"); // Reset timer for next quiz
+
+  // Animations to make the score more interactive
+  const scoreElement = document.querySelector('strong.text-success');
+  let currentScore = 0;
+  const targetScore = parseInt(scoreElement.innerText);
+
+  const animateScore = () => {
+    const interval = setInterval(() => {
+      if (currentScore < targetScore) {
+        currentScore++;
+        scoreElement.innerText = currentScore;
+      } else {
+        clearInterval(interval);
+      }
+    }, 20); // Animation speed (milliseconds)
+  };
+
+  animateScore();
+</script>
+
+{% endblock %}

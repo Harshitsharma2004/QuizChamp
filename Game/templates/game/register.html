@@ -1,0 +1,145 @@
+{% extends 'layout.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; background: linear-gradient(135deg, #141e30, #243b55);">
+    <div class="card shadow-lg p-4 rounded-4" style="width: 100%; max-width: 500px; background: rgba(28, 28, 28, 0.9); border: 2px solid #ffd700; color: #fff; backdrop-filter: blur(10px);">
+        <div class="text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Quiz Icon" width="90" class="mb-3">
+            <h2 class="fw-bold mt-2" style="color: #ffd700;">Register & Play the Ultimate Quiz Challenge! 🏆</h2>
+            <p class="text-white fw-bold" style="font-size: 14px; color: #ccc;">Test your knowledge and become the Quiz Champion!</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label fw-bold" style="color: #ffd700;">{{ field.label }}</label>
+
+                {% if field.name == 'interests' %}
+                <div class="interest-checkbox-group d-flex flex-wrap gap-2">
+                    {% for checkbox in field %}
+                        <label class="custom-checkbox">
+                            {{ checkbox.tag }}
+                            <span class="checkmark"></span>
+                            {{ checkbox.choice_label }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent text-warning border-0" style="font-size: 18px;">❓</span>
+                    {{ field }}
+                </div>
+                {% endif %}
+
+                {% if field.errors %}
+                <div class="text-danger mt-1">
+                    {{ field.errors.as_text }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-warning w-100 fw-bold shadow-lg" style="font-size: 18px;">🎯 Register Now</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold" style="color: #ffd700;">Login Here</a>
+        </p>
+    </div>
+</div>
+
+<style>
+    input, textarea {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 10px;
+        width: 100%;
+        outline: none;
+        transition: 0.3s ease-in-out;
+    }
+    select {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        color: white !important;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 10px;
+        width: 100%;
+        outline: none;
+        transition: 0.3s ease-in-out;
+        appearance: none;
+    }
+    select option {
+        background-color: #1c1c1c;
+        color: white;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #ffd700;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    /* Custom checkbox styling for interests */
+    .interest-checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .custom-checkbox {
+        position: relative;
+        padding-left: 30px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        transition: 0.3s ease;
+        user-select: none;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .custom-checkbox .checkmark {
+        position: absolute;
+        top: 2px;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ffd700;
+        border-radius: 6px;
+        transition: 0.3s ease;
+    }
+
+    .custom-checkbox:hover .checkmark {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .custom-checkbox input:checked ~ .checkmark {
+        background-color: #ffd700;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    }
+
+    .custom-checkbox input:checked ~ .checkmark::after {
+        content: "✔";
+        color: #1c1c1c;
+        position: absolute;
+        left: 4px;
+        top: 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Email Verification</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; text-align: center;">
+    <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #007bff;">Welcome to QuizChamp, {{ user.username }}!</h2>
+        <p style="color: #555;">Thank you for signing up. To activate your account, please verify your email by clicking the button below:</p>
+        
+        <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}" 
+           style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px;">
+            Verify My Email
+        </a>
+
+        <p style="margin-top: 20px; color: #555;">If you did not register, please ignore this email.</p>
+        
+        <p style="font-size: 14px; color: #999; margin-top: 20px;">Thanks,<br><strong>QuizChamp Team</strong></p>
+    </div>
+</body>
+</html>

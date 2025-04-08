@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}🎮 QuizChamp{% endblock %}</title>
+
+    <!-- Bootstrap & Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Dark mode toggle -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (localStorage.getItem("darkMode") === "enabled") {
+          document.body.classList.add("dark-mode");
+        }
+      });
+    </script>
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .main-content {
+        flex: 1;
+      }
+
+      body {
+        background: #0d0d0d;
+        color: white;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .navbar {
+        background: linear-gradient(135deg, #ff00ff, #6600cc);
+        border-bottom: 3px solid #ff00ff;
+        box-shadow: 0px 0px 10px rgba(255, 0, 255, 0.5);
+      }
+
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+        text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+      }
+
+      .nav-link {
+        color: white !important;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .nav-link:hover {
+        color: #ff00ff !important;
+        text-shadow: 0px 0px 10px #ff00ff;
+      }
+
+      .btn-danger {
+        font-weight: bold;
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(135deg, #ff0000, #ff6600);
+        box-shadow: 0px 0px 10px #ff4500;
+      }
+
+      .game-footer {
+        background: #1a1a1a;
+        color: white;
+        padding: 15px;
+        font-size: 1rem;
+        box-shadow: 0px -2px 10px rgba(255, 0, 255, 0.3);
+      }
+
+      .game-footer p {
+        margin-bottom: 0;
+      }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">🔥 QuizChamp</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            {% if user.is_authenticated %} 
+            {% if user.is_staff %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'upload_csv' %}"
+                ><i class="fas fa-file-upload"></i> Upload CSV</a
+              >
+            </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}"
+                ><i class="fas fa-tachometer-alt"></i> Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'general_facts' %}"
+                ><i class="fas fa-tachometer-alt"></i> General Facts</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'profile' %}"
+                ><i class="fas fa-user"></i> View Profile</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'select_category' %}"
+                ><i class="fas fa-gamepad"></i> Play Game</a
+              >
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'register' %}"
+                ><i class="fas fa-user-plus"></i> Register</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}"
+                ><i class="fas fa-sign-in-alt"></i> Login</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Django Messages -->
+    <div class="container mt-3">
+      {% if messages %} {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+
+    <!-- Main Page Content -->
+    <div class="main-content container">{% block content %}{% endblock %}</div>
+
+    <!-- Footer -->
+    <footer class="game-footer text-center">
+      <p>&copy; 2025 QuizChamp | All Rights Reserved 🎮</p>
+      {% comment %}
+      <p class="text-danger">~ <b>Harshit Sharma</b></p>
+      {% endcomment %}
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script>
+      // Clear local timer when reaching result page
+      if (document.cookie.includes("clear_timer=true")) {
+        localStorage.removeItem("quiz_timer");
+        document.cookie =
+          "clear_timer=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

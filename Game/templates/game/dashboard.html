@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center text-light fw-bold">📊 Your Quiz Stats</h2>
+
+    <!-- Summary -->
+    <div class="text-center text-light mt-3">
+        <p>Total Quizzes Played: <strong>{{ games_played }}</strong></p>
+    </div>
+
+    <!-- Chart Section -->
+    {% if category_labels %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="card bg-dark text-light shadow">
+                <div class="card-body">
+                    <h5 class="text-center fw-bold">📚 Category-wise Scores</h5>
+                    <div class="chart-container position-relative">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center text-light mt-4">
+        <p>No quiz data available yet. Take a quiz to see your stats!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const categoryLabels = {{ category_labels|safe }};
+    const categoryData = {{ category_scores|safe }};
+
+    if (categoryLabels.length > 0) {
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: ['#f39c12', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+</script>
+
+<style>
+    .chart-container {
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }
+</style>
+{% endblock %}

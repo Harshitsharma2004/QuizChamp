@@ -1,0 +1,188 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Quiz{% endblock %}
+{% block content %}
+<audio id="correctSound" src="{% static 'sounds/correct.mp3' %}"></audio>
+<audio id="wrongSound" src="{% static 'sounds/wrong.mp3' %}"></audio>
+
+<div class="container py-5">
+  <!-- Circular Timer -->
+  <div class="d-flex justify-content-center mb-4">
+    <div class="position-relative" style="width: 140px; height: 140px">
+      <svg class="position-absolute" width="140" height="140">
+        <circle
+          cx="70"
+          cy="70"
+          r="64"
+          stroke="#e0e0e0"
+          stroke-width="12"
+          fill="none"
+        />
+        <circle
+          id="timer-circle"
+          cx="70"
+          cy="70"
+          r="64"
+          stroke="#00b894"
+          stroke-width="12"
+          fill="none"
+          stroke-dasharray="402.123"
+          stroke-dashoffset="0"
+          stroke-linecap="round"
+          transform="rotate(-90 70 70)"
+        />
+      </svg>
+      <div class="position-absolute top-50 start-50 translate-middle text-center">
+        <div>
+          <strong id="time-left" style="font-size: 1.6rem">10:00</strong>
+        </div>
+        <small class="text-muted">Remaining</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress mx-auto mb-4" style="height: 20px; max-width: 500px">
+    <div
+      id="quizProgressBar"
+      class="progress-bar progress-bar-striped bg-success"
+      role="progressbar"
+      style="width: 0%"
+      aria-valuenow="0"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    ></div>
+  </div>
+
+  <!-- Quiz Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-lg rounded-4 bg-dark text-light">
+        <div class="card-body p-5">
+          <h4 class="text-center mb-4 fw-bold">
+            📘 Question {{ index }} of {{ total }}
+          </h4>
+
+          {% if last_result is not none %}
+          {% if last_result %}
+            <div class="alert alert-success">
+              ✅ Correct!
+            </div>
+          {% else %}
+            <div class="alert alert-danger">
+              ❌ Wrong. Correct answer: <strong>{{ last_correct }}</strong>
+            </div>
+          {% endif %}
+          {% endif %}
+
+          <form method="POST" action="{% url 'submit_answer' %}">
+            {% csrf_token %}
+            <input type="hidden" name="question_id" value="{{ question.id }}" />
+
+            <div class="mb-4">
+              <h5 class="fw-semibold">{{ question.question_text }}</h5>
+            </div>
+
+            {% for option in options %}
+            <div class="form-check mb-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="selected_answer"
+                value="{{ option }}"
+                required
+              />
+              <label class="form-check-label">
+                {{ option }}
+              </label>
+            </div>
+            {% endfor %}
+
+            <div class="d-grid mt-4">
+              <button
+                class="btn btn-success btn-lg fw-semibold shadow-sm"
+                type="submit"
+              >
+                👉 Next Question
+              </button>
+            </div>
+          </form>
+
+          <!-- End Quiz Button (Visible on Every Question) -->
+          <div class="d-grid mt-4">
+            <a href="{% url 'quiz_result' %}" class="btn btn-danger btn-lg fw-semibold shadow-sm">
+              🚨 End Quiz
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Countdown Timer -->
+<script>
+  const TOTAL_TIME = 10 * 60; // 10 minutes in seconds
+  let timeLeft = parseInt(localStorage.getItem("quiz_timer")) || TOTAL_TIME;
+
+  const display = document.getElementById("time-left");
+  const circle = document.getElementById("timer-circle");
+  const fullDash = 2 * Math.PI * 64; // Circumference of the circle
+  const lastResult = {{ last_result|yesno:"true,false" }};
+  if (lastResult !== null) {
+    const sound = lastResult === true ? "correctSound" : "wrongSound";
+    document.getElementById(sound).play();
+  }
+
+  const updateTimer = () => {
+    let mins = Math.floor(timeLeft / 60);
+    let secs = timeLeft % 60;
+    display.textContent = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+
+    let offset = fullDash * (1 - timeLeft / TOTAL_TIME);
+    circle.style.strokeDashoffset = offset;
+
+    // Color changes
+    if (timeLeft <= 60) {
+      circle.style.stroke = '#e74c3c'; // red
+    } else if (timeLeft <= 180) {
+      circle.style.stroke = '#f1c40f'; // yellow
+    } else {
+      circle.style.stroke = '#00b894'; // green
+    }
+  };
+
+  const timer = setInterval(() => {
+    timeLeft--;
+    localStorage.setItem("quiz_timer", timeLeft);
+    updateTimer();
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      alert("⏰ Time's up! Redirecting to results.");
+      localStorage.removeItem("quiz_timer");
+      window.location.href = "{% url 'quiz_result' %}";
+    }
+  }, 1000);
+
+  circle.style.strokeDasharray = fullDash;
+  updateTimer();
+
+  const progressBar = document.getElementById("quizProgressBar");
+  const currentIndex = {{ index }};
+  const totalQuestions = {{ total }};
+  const progressPercent = (currentIndex / totalQuestions) * 100;
+  progressBar.style.width = `${progressPercent}%`;
+  progressBar.setAttribute("aria-valuenow", progressPercent);
+</script>
+
+<style>
+  body {
+    background: radial-gradient(ellipse at top, #1e272e 0%, #000000 100%);
+  }
+  .form-check-input:checked {
+    background-color: #00b894;
+    border-color: #00b894;
+  }
+</style>
+{% endblock %}
