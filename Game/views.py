@@ -220,17 +220,21 @@ def select_category(request):
 def start_quiz(request):
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
-        all_questions = list(Question.objects.filter(category_id=category_id))
-        
-        if len(all_questions) <= 30:
-            questions = all_questions
+        all_questions = list(Question.objects.filter(category_id=category_id).distinct())
+
+        # Remove potential duplicates by question ID
+        unique_questions = list({q.id: q for q in all_questions}.values())
+
+        if len(unique_questions) <= 30:
+            questions = unique_questions
         else:
-            questions = sample(all_questions, 30)
-        
+            questions = sample(unique_questions, 30)
+
         request.session['quiz_questions'] = [q.id for q in questions]
         request.session['quiz_score'] = 0
         request.session['quiz_index'] = 0
         return redirect('quiz_question')
+    
     return redirect('select_category')
 
 @login_required
@@ -328,8 +332,9 @@ def upload_csv(request):
         reader = csv.DictReader(file_data)
 
         for row in reader:
+            row = {k.strip(): v for k, v in row.items()}  # Clean column names
             Question.objects.create(
-                question=row['question'],
+                question_text=row['question_text'],
                 option1=row['option1'],
                 option2=row['option2'],
                 option3=row['option3'],
